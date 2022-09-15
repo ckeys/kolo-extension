@@ -271,8 +271,8 @@ class SQLDataSummaryV2(override val uid: String) extends SQLAlg with MllibFuncti
 
   def getModeValue(schema: StructType, df: DataFrame): Array[Any] = {
     val mode = schema.toList.par.map(sc => {
-      val dfWithoutNa = df.select(col(sc.name)).na.drop()
-      val modeDF = dfWithoutNa.groupBy(col(sc.name).cast(StringType)).count().orderBy(F.desc("count")).limit(2)
+      val dfWithoutNa = df.select(col(sc.name)).na.drop().select(col(sc.name).cast(StringType))
+      val modeDF = dfWithoutNa.groupBy(col(sc.name)).count().orderBy(F.desc("count")).limit(2)
       val modeList = modeDF.collect()
       if (modeList.length != 0) {
         modeList match {
